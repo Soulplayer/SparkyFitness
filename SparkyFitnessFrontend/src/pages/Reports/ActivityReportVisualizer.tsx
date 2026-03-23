@@ -144,6 +144,8 @@ const ActivityReportVisualizer = ({
     );
   }
 
+  const activityTypeKey = stats.activityTypeKey;
+
   // Pace: prefer stored value, fall back to chart calculation
   let averagePaceForDisplay: number | null = null;
   if (stats.pace != null && stats.pace > 0) {
@@ -179,10 +181,31 @@ const ActivityReportVisualizer = ({
   const durationFormatted =
     durationSeconds != null ? formatDuration(durationSeconds) : null;
 
-  const paceFormatted =
-    averagePaceForDisplay != null && averagePaceForDisplay > 0
-      ? `${averagePaceForDisplay.toFixed(2)} /${distanceUnit === 'km' ? 'km' : 'mi'}`
-      : null;
+  // Cycling activities show speed (km/h or mph); all others show pace (min/km or min/mi).
+  const isCycling =
+    activityTypeKey != null &&
+    (activityTypeKey.toLowerCase().includes('cycling') ||
+      activityTypeKey.toLowerCase().includes('biking') ||
+      activityTypeKey.toLowerCase() === 'ride' ||
+      activityTypeKey.toLowerCase() === 'ebikeride' ||
+      activityTypeKey.toLowerCase() === 'virtualride');
+
+  const speedFormatted = (() => {
+    if (!isCycling || stats.speedKmh == null || stats.speedKmh <= 0)
+      return null;
+    const speed =
+      distanceUnit === 'miles' ? stats.speedKmh / 1.60934 : stats.speedKmh;
+    const unit = distanceUnit === 'miles' ? 'mph' : 'km/h';
+    return `${speed.toFixed(1)} ${unit}`;
+  })();
+
+  const paceFormatted = (() => {
+    if (isCycling) return null; // cycling shows speed instead
+    if (averagePaceForDisplay != null && averagePaceForDisplay > 0) {
+      return `${averagePaceForDisplay.toFixed(2)} /${distanceUnit === 'km' ? 'km' : 'mi'}`;
+    }
+    return null;
+  })();
 
   const ascentFormatted =
     stats.ascent != null && stats.ascent > 0
@@ -230,8 +253,6 @@ const ActivityReportVisualizer = ({
         return t('reports.activityReport.timeOfDayLocal');
     }
   };
-
-  const activityTypeKey = stats.activityTypeKey;
 
   return (
     <div className="activity-report-visualizer p-4">
@@ -312,6 +333,7 @@ const ActivityReportVisualizer = ({
               <ActivityStatsGrid
                 distance={distanceFormatted}
                 duration={durationFormatted}
+                speed={speedFormatted}
                 pace={paceFormatted}
                 ascent={ascentFormatted}
                 calories={caloriesFormatted}

@@ -8,12 +8,14 @@ import {
   FaFire,
   FaHeartbeat,
   FaRunning,
+  FaBicycle,
 } from 'react-icons/fa';
 
 interface ActivityStatsGridProps {
   distance: string | null;
   duration: string | null;
   pace: string | null;
+  speed: string | null;
   ascent: string | null;
   calories: string | null;
   heartRate: string | null;
@@ -24,6 +26,7 @@ export const ActivityStatsGrid = ({
   distance,
   duration,
   pace,
+  speed,
   ascent,
   calories,
   heartRate,
@@ -56,6 +59,19 @@ export const ActivityStatsGrid = ({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{duration}</div>
+          </CardContent>
+        </Card>
+      )}
+      {speed !== null && (
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+            <CardTitle className="text-sm font-medium">
+              {t('reports.activityReport.avgSpeed')}
+            </CardTitle>
+            <FaBicycle className="h-5 w-5 text-purple-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{speed}</div>
           </CardContent>
         </Card>
       )}

@@ -330,8 +330,10 @@ export interface ActivityStats {
   heartRate: number | null;
   /** steps/min or rpm */
   cadence: number | null;
-  /** min/km */
+  /** min/km — null for speed-based activities (cycling) */
   pace: number | null;
+  /** km/h — only set for speed-based activities (cycling); null otherwise */
+  speedKmh: number | null;
   /** metres */
   ascent: number | null;
   activityName: string | null;
@@ -424,9 +426,11 @@ export function readActivityStats(
     pos(a['averageRunCadence']) ??
     pos(a['average_cadence']);
 
-  // pace – Garmin: min/km; derive from speed if missing
+  // speed / pace – mutually exclusive depending on activity type.
+  // Cycling activities use speed (km/h); running/walking use pace (min/km).
   const rawPace = pos(a['averagePace']);
   const avgSpeedMs = pos(a['averageSpeed']) ?? pos(a['average_speed']);
+  const speedKmh = avgSpeedMs != null ? avgSpeedMs * 3.6 : null;
   const derivedPace =
     avgSpeedMs != null && avgSpeedMs > 0 ? 1000 / (avgSpeedMs * 60) : null;
   const pace = rawPace ?? derivedPace;
@@ -455,6 +459,7 @@ export function readActivityStats(
     heartRate,
     cadence,
     pace,
+    speedKmh,
     ascent,
     activityName,
     activityTypeKey,
