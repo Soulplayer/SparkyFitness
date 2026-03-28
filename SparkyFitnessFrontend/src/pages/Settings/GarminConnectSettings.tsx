@@ -1,4 +1,11 @@
 import { useState } from 'react';
+
+function getGarminApiDetail(error: unknown): string | undefined {
+  return typeof error === 'object' && error !== null && 'response' in error
+    ? (error as { response?: { data?: { detail?: string } } }).response?.data
+        ?.detail
+    : undefined;
+}
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -71,11 +78,7 @@ const GarminConnectSettings = ({
       }
     } catch (error: unknown) {
       console.error('Login Error:', error);
-      const apiDetail =
-        typeof error === 'object' && error !== null && 'response' in error
-          ? (error as { response?: { data?: { detail?: string } } }).response
-              ?.data?.detail
-          : undefined;
+      const apiDetail = getGarminApiDetail(error);
       toast({
         title: 'Garmin Login Failed',
         description:
@@ -113,11 +116,7 @@ const GarminConnectSettings = ({
       }
     } catch (error: unknown) {
       console.error('MFA Error:', error);
-      const apiDetail =
-        typeof error === 'object' && error !== null && 'response' in error
-          ? (error as { response?: { data?: { detail?: string } } }).response
-              ?.data?.detail
-          : undefined;
+      const apiDetail = getGarminApiDetail(error);
       toast({
         title: 'MFA Verification Failed',
         description:

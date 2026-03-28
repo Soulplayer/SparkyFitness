@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import {
@@ -65,6 +65,12 @@ export const DataSourceSettings = () => {
   const [localBody, setLocalBody] = useState(bodySourcePreference);
   const [localActivity, setLocalActivity] = useState(activitySourcePreference);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLocalSleep(sleepSourcePreference);
+    setLocalBody(bodySourcePreference);
+    setLocalActivity(activitySourcePreference);
+  }, [sleepSourcePreference, bodySourcePreference, activitySourcePreference]);
 
   const handleSave = async () => {
     if (!user) return;
