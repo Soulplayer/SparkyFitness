@@ -197,8 +197,8 @@ export const DataSourceSettings = () => {
                 All sources merged automatically
               </div>
               <p className="text-xs text-muted-foreground">
-                If two sources report the same session (same start time &amp;
-                duration), the entry with the most calories is kept and the
+                If two sources report the same session (matching start time
+                &amp; duration), the first entry synced is kept and the
                 duplicate is discarded.
               </p>
             </div>
