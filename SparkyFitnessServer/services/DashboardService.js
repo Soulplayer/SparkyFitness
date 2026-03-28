@@ -247,6 +247,7 @@ async function getDashboardStats(userId, date) {
       net: Math.round(netCalories),
       progress: Math.round(progress),
       steps: stepsCount,
+      stepCalories: backgroundStepCalories,
       bmr: Math.round(bmr),
       unit: 'kcal',
     };
