@@ -310,7 +310,7 @@ async function getCheckInMeasurementsByDate(userId, date, source = null) {
     // to work; once P5 preferences are implemented they will pass source explicitly.
     const result = await client.query(
       `SELECT * FROM check_in_measurements WHERE user_id = $1 AND entry_date = $2
-       ORDER BY array_position(ARRAY['garmin','Garmin','withings','Withings','fitbit','Fitbit','polar','Polar','healthkit','health_connect','manual'], source) NULLS LAST`,
+       ORDER BY array_position(ARRAY['garmin','withings','fitbit','polar','healthkit','health_connect','manual'], LOWER(source)) NULLS LAST`,
       [userId, date]
     );
     // Backward-compatible: return first row so existing single-source callers still work
@@ -325,7 +325,7 @@ async function getAllCheckInMeasurementsByDate(userId, date) {
   try {
     const result = await client.query(
       `SELECT * FROM check_in_measurements WHERE user_id = $1 AND entry_date = $2
-       ORDER BY array_position(ARRAY['garmin','Garmin','withings','Withings','fitbit','Fitbit','polar','Polar','healthkit','health_connect','manual'], source) NULLS LAST`,
+       ORDER BY array_position(ARRAY['garmin','withings','fitbit','polar','healthkit','health_connect','manual'], LOWER(source)) NULLS LAST`,
       [userId, date]
     );
     return result.rows;
