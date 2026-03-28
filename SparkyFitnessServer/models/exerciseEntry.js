@@ -475,8 +475,9 @@ async function _createExerciseEntryWithClient(
            AND source <> $3
            AND source_id IS NOT NULL
            AND start_time IS NOT NULL
-           AND ABS(EXTRACT(EPOCH FROM (start_time - $4::timestamptz))) <= $6
-           AND LEAST(duration_minutes, $5) >= GREATEST(duration_minutes, $5) * $7
+           AND start_time BETWEEN $4::timestamptz - ($5::numeric * INTERVAL '1 second')
+                              AND $4::timestamptz + ($5::numeric * INTERVAL '1 second')
+           AND LEAST(duration_minutes, $6) >= GREATEST(duration_minutes, $6) * $7
            AND exercise_preset_entry_id IS NULL
          LIMIT 1`,
         [
@@ -484,8 +485,8 @@ async function _createExerciseEntryWithClient(
           entryData.entry_date,
           entrySource,
           entryData.start_time,
-          entryData.duration_minutes,
           CROSS_SOURCE_DEDUP.MAX_START_TIME_DIFF_SECONDS,
+          entryData.duration_minutes,
           CROSS_SOURCE_DEDUP.MIN_DURATION_SIMILARITY_RATIO,
         ]
       );
